@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
   <title>ChemBioCalc — Duyuru Editörü</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -57,7 +58,25 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <!-- Password Gate -->
+  <div id="auth-gate" style="position:fixed;inset:0;z-index:9999;background:#0a0a1a;display:flex;align-items:center;justify-content:center;padding:24px">
+    <div style="background:#16162b;border:1px solid #2a2a4a;border-radius:14px;padding:32px;max-width:380px;width:100%;text-align:center">
+      <div style="font-size:48px;margin-bottom:12px">🔒</div>
+      <h1 style="font-size:1.4rem;color:#fff;margin-bottom:8px">Yetkili Giriş</h1>
+      <p style="color:#8888a8;font-size:0.85rem;margin-bottom:24px">Bu sayfa kapalıdır.</p>
+      <form id="auth-form" onsubmit="event.preventDefault();attemptAuth()">
+        <input id="auth-pass" type="password" placeholder="Geçiş anahtarı" autofocus
+          style="width:100%;background:#0a0a1a;border:1px solid #2a2a4a;border-radius:8px;padding:12px 14px;color:#e0e0f0;font-size:0.95rem;font-family:inherit;margin-bottom:12px">
+        <button type="submit"
+          style="width:100%;background:#7b7bf0;color:#fff;border:none;border-radius:8px;padding:12px;font-size:0.95rem;font-weight:600;cursor:pointer">
+          Giriş
+        </button>
+        <div id="auth-error" style="color:#ef4444;font-size:0.8rem;margin-top:12px;display:none">❌ Yanlış anahtar</div>
+      </form>
+    </div>
+  </div>
+
+  <div class="container" id="main-app" style="display:none">
     <header>
       <div>
         <h1>📢 Duyuru Editörü</h1>
@@ -246,6 +265,53 @@
   </div>
 
   <script>
+    // ─── Auth Gate ──────────────────────────────────────────────
+    const PASS_HASH = '63dcacdcbe56693c0334f04f20dc40411e29e09a0e075b57a0e7c8d2be09b7ac';
+    const AUTH_KEY = 'cbc-composer-auth';
+    const AUTH_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 gün
+
+    async function sha256(text) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+      return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function getStoredAuth() {
+      try {
+        const raw = localStorage.getItem(AUTH_KEY);
+        if (!raw) return null;
+        const obj = JSON.parse(raw);
+        if (Date.now() - obj.ts > AUTH_TTL_MS) return null;
+        return obj.hash === PASS_HASH;
+      } catch { return null; }
+    }
+
+    function unlockUI() {
+      document.getElementById('auth-gate').style.display = 'none';
+      document.getElementById('main-app').style.display = 'block';
+      // İlk render
+      bootApp();
+    }
+
+    async function attemptAuth() {
+      const pass = document.getElementById('auth-pass').value;
+      const hash = await sha256(pass);
+      if (hash === PASS_HASH) {
+        localStorage.setItem(AUTH_KEY, JSON.stringify({ hash, ts: Date.now() }));
+        unlockUI();
+      } else {
+        document.getElementById('auth-error').style.display = 'block';
+        document.getElementById('auth-pass').value = '';
+        document.getElementById('auth-pass').focus();
+      }
+    }
+
+    // Sayfa açılışında kontrol et
+    if (getStoredAuth()) {
+      // Auth henüz uygulanmadan main-app hidden olduğu için bootApp sonradan çağrılacak
+      window.addEventListener('DOMContentLoaded', unlockUI);
+    }
+
+    // ─── Composer State ─────────────────────────────────────────
     let announcements = [];
     let editingIndex = -1;
 
@@ -415,11 +481,13 @@
       URL.revokeObjectURL(url);
     }
 
-    // İlk yükleme — varsa mevcut JSON'u çek
-    fetch('/announcements.json').then((r) => r.ok ? r.json() : null).then((j) => {
-      if (j?.announcements) { announcements = j.announcements; render(); }
-      else { render(); }
-    }).catch(() => render());
+    // Auth tamamlandıktan sonra çalışır
+    function bootApp() {
+      fetch('/announcements.json').then((r) => r.ok ? r.json() : null).then((j) => {
+        if (j?.announcements) { announcements = j.announcements; render(); }
+        else { render(); }
+      }).catch(() => render());
+    }
   </script>
 </body>
 </html>

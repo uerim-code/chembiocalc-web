@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /composer-x7k2m9.html
+Disallow: /admin
+Disallow: /announcements.json
