@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChemBioCalc — Duyuru Editörü</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a1a; color: #e0e0f0; min-height: 100vh; padding: 24px; }
+    .container { max-width: 1280px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 24px; border-bottom: 1px solid #2a2a4a; margin-bottom: 24px; }
+    h1 { font-size: 1.6rem; color: #fff; }
+    .subtitle { color: #8888a8; font-size: 0.9rem; margin-top: 4px; }
+    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel { background: #16162b; border: 1px solid #2a2a4a; border-radius: 12px; padding: 20px; }
+    .panel h2 { font-size: 1.1rem; color: #fff; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .ann-list { display: flex; flex-direction: column; gap: 12px; max-height: 70vh; overflow-y: auto; }
+    .ann-card { background: #1f1f3a; border: 1px solid #2a2a4a; border-radius: 8px; padding: 14px; }
+    .ann-card.active { border-color: #7b7bf0; box-shadow: 0 0 0 2px rgba(123,123,240,0.18); }
+    .ann-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .ann-id { font-family: 'Courier New', monospace; color: #7b7bf0; font-size: 0.85rem; }
+    .ann-status { font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; }
+    .ann-status.active { background: #10b98133; color: #10b981; }
+    .ann-status.inactive { background: #44445533; color: #888; }
+    .ann-title { font-size: 0.95rem; color: #fff; font-weight: 600; margin-bottom: 4px; }
+    .ann-message { font-size: 0.8rem; color: #a0a0c0; line-height: 1.4; }
+    .ann-meta { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; font-size: 0.7rem; }
+    .ann-meta span { background: #2a2a4a; color: #c0c0e0; padding: 2px 8px; border-radius: 8px; }
+    .ann-actions { display: flex; gap: 6px; margin-top: 10px; }
+    button { cursor: pointer; border: none; border-radius: 6px; padding: 8px 14px; font-size: 0.85rem; font-weight: 600; transition: all 0.15s; }
+    .btn-primary { background: #7b7bf0; color: #fff; }
+    .btn-primary:hover { background: #6a6ae0; }
+    .btn-secondary { background: #2a2a4a; color: #c0c0e0; }
+    .btn-secondary:hover { background: #3a3a5a; }
+    .btn-danger { background: #ef444433; color: #ef4444; }
+    .btn-danger:hover { background: #ef444455; }
+    .btn-success { background: #10b981; color: #fff; }
+    .btn-success:hover { background: #0ea571; }
+    .field { margin-bottom: 14px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    label { display: block; font-size: 0.75rem; color: #8888a8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    input, textarea, select { width: 100%; background: #0a0a1a; border: 1px solid #2a2a4a; border-radius: 6px; padding: 10px 12px; color: #e0e0f0; font-size: 0.9rem; font-family: inherit; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: #7b7bf0; }
+    textarea { resize: vertical; min-height: 60px; }
+    .checkbox-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+    .checkbox-row input { width: auto; }
+    .checkbox-row label { margin: 0; text-transform: none; letter-spacing: normal; font-size: 0.9rem; color: #e0e0f0; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip { padding: 6px 12px; border-radius: 16px; background: #1f1f3a; border: 1px solid #2a2a4a; color: #a0a0c0; font-size: 0.8rem; cursor: pointer; }
+    .chip.selected { background: #7b7bf0; color: #fff; border-color: #7b7bf0; }
+    pre.json { background: #0a0a1a; border: 1px solid #2a2a4a; border-radius: 8px; padding: 14px; color: #b0b0d0; font-size: 0.8rem; overflow-x: auto; max-height: 50vh; overflow-y: auto; font-family: 'SF Mono', 'Courier New', monospace; }
+    .help { color: #8888a8; font-size: 0.75rem; margin-top: 4px; }
+    .toolbar { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .info-banner { background: #1f3a8a33; border: 1px solid #3b82f6; border-radius: 8px; padding: 12px; margin-bottom: 14px; color: #93c5fd; font-size: 0.85rem; line-height: 1.5; }
+    .info-banner code { background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>📢 Duyuru Editörü</h1>
+        <div class="subtitle">ChemBioCalc Pro — In-App Announcements Composer</div>
+      </div>
+      <div>
+        <button class="btn-primary" onclick="addNew()">+ Yeni Duyuru</button>
+      </div>
+    </header>
+
+    <div class="info-banner">
+      💡 <b>Nasıl kullanılır:</b> Duyuruları aşağıda düzenle, sağdaki JSON'u kopyala. <b>announcements.json</b> dosyasını <a href="https://github.com/uerim-code/chembiocalc-web/edit/main/announcements.json" target="_blank" style="color:#fff;text-decoration:underline">GitHub'da edit</a> et, içeriği yapıştır, commit'le. 1-2 dk sonra <code>https://chembiocalc.com/announcements.json</code> güncellenir.
+    </div>
+
+    <div class="layout">
+      <!-- Sol: Duyuru listesi + editör -->
+      <div class="panel">
+        <h2>
+          <span>Duyurular (<span id="count">0</span>)</span>
+          <button class="btn-secondary" onclick="importJson()">📥 JSON Yükle</button>
+        </h2>
+        <div class="ann-list" id="annList"></div>
+      </div>
+
+      <!-- Sağ: JSON preview -->
+      <div class="panel">
+        <h2>
+          <span>JSON Çıktı</span>
+          <div style="display:flex;gap:8px">
+            <button class="btn-secondary" onclick="copyJson()">📋 Kopyala</button>
+            <button class="btn-success" onclick="downloadJson()">⬇️ İndir</button>
+          </div>
+        </h2>
+        <pre class="json" id="jsonOutput"></pre>
+      </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="modalBg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;padding:24px">
+      <div style="background:#16162b;border:1px solid #2a2a4a;border-radius:12px;padding:24px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto">
+        <h2 style="margin-bottom:18px">Duyuru Düzenle</h2>
+        <div class="field-row">
+          <div class="field">
+            <label>ID (benzersiz)</label>
+            <input id="f-id" placeholder="örn. promo-yilsonu-2026">
+            <div class="help">Dismiss tracking için. Aynı ID iki kez kullanılmaz.</div>
+          </div>
+          <div class="field">
+            <label>Aktif mi</label>
+            <select id="f-active">
+              <option value="true">✅ Aktif (gösterilir)</option>
+              <option value="false">⏸️ Pasif (gizli)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Tür</label>
+            <select id="f-type">
+              <option value="modal">Modal (tam ekran popup)</option>
+              <option value="banner">Banner (üst şerit)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Kapatılabilir mi</label>
+            <select id="f-dismissible">
+              <option value="true">Evet</option>
+              <option value="false">Hayır (zorunlu)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Başlık (TR)</label>
+            <input id="f-title-tr" placeholder="🎁 Yıl sonu fırsatı">
+          </div>
+          <div class="field">
+            <label>Title (EN)</label>
+            <input id="f-title-en" placeholder="🎁 Year-end deal">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Mesaj (TR)</label>
+            <textarea id="f-msg-tr" rows="3" placeholder="Pro yıllık abonelikte %50 indirim"></textarea>
+          </div>
+          <div class="field">
+            <label>Message (EN)</label>
+            <textarea id="f-msg-en" rows="3" placeholder="%50 off on Pro yearly plan"></textarea>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>CTA Buton TR (opsiyonel)</label>
+            <input id="f-cta-tr" placeholder="Yükselt">
+          </div>
+          <div class="field">
+            <label>CTA Buton EN (opsiyonel)</label>
+            <input id="f-cta-en" placeholder="Upgrade">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>CTA URL (opsiyonel)</label>
+          <input id="f-cta-url" placeholder="chemcalcpro://upgrade veya https://...">
+          <div class="help">Deep link: <code style="background:#0a0a1a;padding:2px 6px;border-radius:3px">chemcalcpro://</code> uygulamayı açar. Veya tam URL.</div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>İkon</label>
+            <select id="f-icon">
+              <option value="">— yok —</option>
+              <option value="gift">🎁 gift</option>
+              <option value="star">⭐ star</option>
+              <option value="rocket">🚀 rocket</option>
+              <option value="megaphone">📣 megaphone</option>
+              <option value="sparkles">✨ sparkles</option>
+              <option value="flash">⚡ flash</option>
+              <option value="information-circle">ℹ️ info</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Vurgu Rengi (HEX)</label>
+            <input id="f-color" placeholder="#F59E0B">
+            <div class="help">Boş bırakırsan default mor</div>
+          </div>
+        </div>
+
+        <h3 style="font-size:0.9rem;margin:18px 0 8px;color:#a0a0c0;text-transform:uppercase;letter-spacing:0.5px">Hedefleme (boş = tümü)</h3>
+
+        <div class="field">
+          <label>Platformlar</label>
+          <div class="chips">
+            <div class="chip" data-platform="ios" onclick="toggleChip(this)">📱 iOS</div>
+            <div class="chip" data-platform="android" onclick="toggleChip(this)">🤖 Android</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Diller</label>
+          <div class="chips">
+            <div class="chip" data-lang="tr" onclick="toggleChip(this)">🇹🇷 Türkçe</div>
+            <div class="chip" data-lang="en" onclick="toggleChip(this)">🇬🇧 English</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Ülkeler (ISO 3166-1 alpha-2, virgülle ayır, opsiyonel)</label>
+          <input id="f-countries" placeholder="TR, US, DE">
+          <div class="help">Örnek: TR (Türkiye), US (ABD), DE (Almanya), GB (İngiltere). Boş = tüm ülkeler.</div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Min App Versiyonu (opsiyonel)</label>
+            <input id="f-minver" placeholder="1.3.0">
+          </div>
+          <div class="field">
+            <label>Max App Versiyonu (opsiyonel)</label>
+            <input id="f-maxver" placeholder="">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Başlangıç Tarihi (opsiyonel)</label>
+            <input id="f-starts" type="datetime-local">
+          </div>
+          <div class="field">
+            <label>Bitiş Tarihi (opsiyonel)</label>
+            <input id="f-expires" type="datetime-local">
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button class="btn-primary" onclick="saveEdit()">💾 Kaydet</button>
+          <button class="btn-secondary" onclick="closeModal()">İptal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let announcements = [];
+    let editingIndex = -1;
+
+    function render() {
+      const list = document.getElementById('annList');
+      document.getElementById('count').textContent = announcements.length;
+      if (announcements.length === 0) {
+        list.innerHTML = '<div style="color:#8888a8;padding:32px;text-align:center;">Henüz duyuru yok. Üst sağdan <b>+ Yeni Duyuru</b>\'ya tıkla.</div>';
+      } else {
+        list.innerHTML = announcements.map((a, i) => `
+          <div class="ann-card ${a.active ? 'active' : ''}">
+            <div class="ann-header">
+              <span class="ann-id">${a.id || '(ID yok)'}</span>
+              <span class="ann-status ${a.active ? 'active' : 'inactive'}">${a.active ? 'AKTIF' : 'PASIF'}</span>
+            </div>
+            <div class="ann-title">${(a.title?.tr || a.title?.en || '(başlık yok)').replace(/</g,'&lt;')}</div>
+            <div class="ann-message">${(a.message?.tr || a.message?.en || '').replace(/</g,'&lt;').slice(0,140)}</div>
+            <div class="ann-meta">
+              <span>${a.type || 'modal'}</span>
+              ${a.platforms?.length ? `<span>📱 ${a.platforms.join(', ')}</span>` : ''}
+              ${a.languages?.length ? `<span>🗣️ ${a.languages.join(', ')}</span>` : ''}
+              ${a.countries?.length ? `<span>🌍 ${a.countries.join(', ')}</span>` : ''}
+              ${a.minVersion ? `<span>≥ v${a.minVersion}</span>` : ''}
+              ${a.expiresAt ? `<span>⏰ ${new Date(a.expiresAt).toLocaleDateString('tr-TR')}</span>` : ''}
+            </div>
+            <div class="ann-actions">
+              <button class="btn-secondary" onclick="openEdit(${i})">✏️ Düzenle</button>
+              <button class="btn-secondary" onclick="toggleActive(${i})">${a.active ? '⏸️ Pasifleştir' : '▶️ Aktifleştir'}</button>
+              <button class="btn-danger" onclick="removeAnn(${i})">🗑️ Sil</button>
+            </div>
+          </div>
+        `).join('');
+      }
+      renderJson();
+    }
+
+    function renderJson() {
+      const out = { version: 1, announcements };
+      document.getElementById('jsonOutput').textContent = JSON.stringify(out, null, 2);
+    }
+
+    function addNew() {
+      const id = 'ann-' + Date.now();
+      announcements.push({
+        id, active: true, type: 'modal',
+        title: { tr: '', en: '' }, message: { tr: '', en: '' },
+        dismissible: true,
+      });
+      editingIndex = announcements.length - 1;
+      openEdit(editingIndex);
+    }
+
+    function openEdit(i) {
+      editingIndex = i;
+      const a = announcements[i];
+      document.getElementById('f-id').value = a.id || '';
+      document.getElementById('f-active').value = String(a.active !== false);
+      document.getElementById('f-type').value = a.type || 'modal';
+      document.getElementById('f-dismissible').value = String(a.dismissible !== false);
+      document.getElementById('f-title-tr').value = a.title?.tr || '';
+      document.getElementById('f-title-en').value = a.title?.en || '';
+      document.getElementById('f-msg-tr').value = a.message?.tr || '';
+      document.getElementById('f-msg-en').value = a.message?.en || '';
+      document.getElementById('f-cta-tr').value = a.ctaText?.tr || '';
+      document.getElementById('f-cta-en').value = a.ctaText?.en || '';
+      document.getElementById('f-cta-url').value = a.ctaUrl || '';
+      document.getElementById('f-icon').value = a.icon || '';
+      document.getElementById('f-color').value = a.accentColor || '';
+      document.getElementById('f-countries').value = (a.countries || []).join(', ');
+      document.getElementById('f-minver').value = a.minVersion || '';
+      document.getElementById('f-maxver').value = a.maxVersion || '';
+      document.getElementById('f-starts').value = a.startsAt ? a.startsAt.slice(0, 16) : '';
+      document.getElementById('f-expires').value = a.expiresAt ? a.expiresAt.slice(0, 16) : '';
+
+      // Chips
+      document.querySelectorAll('.chip').forEach((c) => c.classList.remove('selected'));
+      (a.platforms || []).forEach((p) => {
+        const c = document.querySelector(`.chip[data-platform="${p}"]`);
+        if (c) c.classList.add('selected');
+      });
+      (a.languages || []).forEach((l) => {
+        const c = document.querySelector(`.chip[data-lang="${l}"]`);
+        if (c) c.classList.add('selected');
+      });
+
+      document.getElementById('modalBg').style.display = 'flex';
+    }
+
+    function toggleChip(el) { el.classList.toggle('selected'); }
+
+    function saveEdit() {
+      const platforms = [...document.querySelectorAll('.chip[data-platform].selected')].map((c) => c.dataset.platform);
+      const languages = [...document.querySelectorAll('.chip[data-lang].selected')].map((c) => c.dataset.lang);
+      const countries = document.getElementById('f-countries').value.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+
+      const a = {
+        id: document.getElementById('f-id').value.trim() || 'ann-' + Date.now(),
+        active: document.getElementById('f-active').value === 'true',
+        type: document.getElementById('f-type').value,
+        title: {
+          tr: document.getElementById('f-title-tr').value.trim(),
+          en: document.getElementById('f-title-en').value.trim() || document.getElementById('f-title-tr').value.trim(),
+        },
+        message: {
+          tr: document.getElementById('f-msg-tr').value.trim(),
+          en: document.getElementById('f-msg-en').value.trim() || document.getElementById('f-msg-tr').value.trim(),
+        },
+        dismissible: document.getElementById('f-dismissible').value === 'true',
+      };
+      const ctaTr = document.getElementById('f-cta-tr').value.trim();
+      const ctaEn = document.getElementById('f-cta-en').value.trim();
+      const ctaUrl = document.getElementById('f-cta-url').value.trim();
+      if (ctaTr || ctaEn) a.ctaText = { tr: ctaTr || ctaEn, en: ctaEn || ctaTr };
+      if (ctaUrl) a.ctaUrl = ctaUrl;
+
+      const icon = document.getElementById('f-icon').value;
+      if (icon) a.icon = icon;
+      const color = document.getElementById('f-color').value.trim();
+      if (color) a.accentColor = color;
+
+      if (platforms.length) a.platforms = platforms;
+      if (languages.length) a.languages = languages;
+      if (countries.length) a.countries = countries;
+
+      const minV = document.getElementById('f-minver').value.trim();
+      const maxV = document.getElementById('f-maxver').value.trim();
+      if (minV) a.minVersion = minV;
+      if (maxV) a.maxVersion = maxV;
+
+      const starts = document.getElementById('f-starts').value;
+      const expires = document.getElementById('f-expires').value;
+      if (starts) a.startsAt = new Date(starts).toISOString();
+      if (expires) a.expiresAt = new Date(expires).toISOString();
+
+      announcements[editingIndex] = a;
+      closeModal();
+      render();
+    }
+
+    function closeModal() { document.getElementById('modalBg').style.display = 'none'; }
+
+    function toggleActive(i) { announcements[i].active = !announcements[i].active; render(); }
+    function removeAnn(i) { if (confirm('Silmek istediğinden emin misin?')) { announcements.splice(i, 1); render(); } }
+
+    function importJson() {
+      const input = prompt('Yüklemek istediğin JSON\'u yapıştır:');
+      if (!input) return;
+      try {
+        const parsed = JSON.parse(input);
+        if (Array.isArray(parsed.announcements)) {
+          announcements = parsed.announcements;
+          render();
+        } else { alert('Geçersiz format'); }
+      } catch (e) { alert('JSON hatalı: ' + e.message); }
+    }
+
+    function copyJson() {
+      const text = document.getElementById('jsonOutput').textContent;
+      navigator.clipboard.writeText(text).then(() => alert('JSON kopyalandı!')).catch(() => alert('Kopyalanamadı'));
+    }
+
+    function downloadJson() {
+      const blob = new Blob([document.getElementById('jsonOutput').textContent], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'announcements.json'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // İlk yükleme — varsa mevcut JSON'u çek
+    fetch('/announcements.json').then((r) => r.ok ? r.json() : null).then((j) => {
+      if (j?.announcements) { announcements = j.announcements; render(); }
+      else { render(); }
+    }).catch(() => render());
+  </script>
+</body>
+</html>
