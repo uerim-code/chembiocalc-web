@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChemBioCalc – Kimya, Biyoloji ve Eczacılık Hesaplayıcı</title>
+  <meta name="description" content="ChemBioCalc; bilim insanları, öğrenciler ve laboratuvar profesyonelleri için profesyonel bir kimya, moleküler biyoloji ve farmakoloji hesaplayıcısıdır. Çözeltiler, reaksiyonlar, analitik QC, moleküler biyoloji ve eczacılık alanlarında 60+ araç — çevrimdışı, hesap gerektirmez.">
+  <link rel="canonical" href="https://chembiocalc.com/tr/">
+  <link rel="alternate" hreflang="en" href="https://chembiocalc.com/">
+  <link rel="alternate" hreflang="tr" href="https://chembiocalc.com/tr/">
+  <link rel="alternate" hreflang="x-default" href="https://chembiocalc.com/">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <meta name="robots" content="index, follow">
+  <script>
+    // İlk ziyarette dili otomatik algıla; sonrasında manuel seçime uy.
+    (function () {
+      try {
+        var stored = localStorage.getItem('cbc_lang');
+        if (stored === 'en') { location.replace('/'); return; }
+        if (!stored) {
+          var nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+          if (nav.indexOf('tr') !== 0) { location.replace('/'); }
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --bg:#0a0a1a; --card:#12122a; --card2:#16213e; --accent:#7b7bf0; --text:#e0e0f0; --muted:#a0a0c0; --border:#23234a; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Header */
+    header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: rgba(10,10,26,0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #fff; }
+    .brand img { width: 32px; height: 32px; border-radius: 8px; }
+    .lang-switch { display: flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+    .lang-switch a { padding: 6px 14px; font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+    .lang-switch a.active { background: var(--accent); color: #fff; }
+    .lang-switch a:hover { text-decoration: none; }
+
+    /* Hero */
+    .hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 64px 20px 40px; }
+    .hero .logo { width: 110px; height: 110px; border-radius: 25px; margin-bottom: 22px; box-shadow: 0 8px 30px rgba(123,123,240,0.35); }
+    .hero h1 { font-size: 2.5rem; color: #fff; margin-bottom: 14px; }
+    .hero p.tagline { font-size: 1.12rem; color: var(--muted); max-width: 520px; margin-bottom: 34px; }
+    .badges { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; margin-bottom: 12px; align-items: center; }
+    .badges img { height: 56px; width: auto; }
+    .store-hint { font-size: 0.88rem; color: #8a8ab0; margin-top: 4px; }
+
+    /* Features */
+    .features { max-width: 1080px; margin: 0 auto; padding: 30px 20px 70px; }
+    .features h2 { text-align: center; font-size: 1.8rem; color: #fff; margin-bottom: 8px; }
+    .features .sub { text-align: center; color: var(--muted); margin-bottom: 44px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .cat { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px 22px 8px; }
+    .cat-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .cat-icon { font-size: 1.6rem; line-height: 1; }
+    .cat h3 { font-size: 1.18rem; color: #fff; }
+    .cat .pro { font-size: 0.68rem; font-weight: 700; color: #1a1a2e; background: #facc15; border-radius: 6px; padding: 2px 7px; margin-left: 8px; vertical-align: middle; }
+    .cat ul { list-style: none; }
+    .cat li { position: relative; padding: 6px 0 6px 22px; color: #cfcfe6; font-size: 0.95rem; border-top: 1px solid rgba(255,255,255,0.04); }
+    .cat li:first-child { border-top: none; }
+    .cat li::before { content: '›'; position: absolute; left: 4px; color: var(--accent); font-weight: 700; }
+    .cat li b { color: #fff; font-weight: 600; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 36px 20px 56px; text-align: center; }
+    .footer-links { display: flex; gap: 26px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px; }
+    footer .small { color: #6a6a90; font-size: 0.82rem; }
+
+    @media (max-width: 520px) { .hero h1 { font-size: 2rem; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><img src="/icon.png" alt="ChemBioCalc simgesi"> ChemBioCalc</div>
+    <nav class="lang-switch">
+      <a href="/" data-lang="en">EN</a>
+      <a href="/tr/" class="active" data-lang="tr">TR</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <img src="/icon.png" alt="ChemBioCalc uygulama simgesi" class="logo">
+    <h1>ChemBioCalc</h1>
+    <p class="tagline">Bilim insanları, öğrenciler ve laboratuvar profesyonelleri için profesyonel bir kimya, moleküler biyoloji ve farmakoloji hesaplayıcısı — tam çift dilli (TR/EN), çevrimdışı çalışır, hesap gerektirmez.</p>
+    <div class="badges">
+      <a href="https://apps.apple.com/us/app/chembiocalc/id6762520756" target="_blank" rel="noopener">
+        <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="App Store'dan İndir">
+      </a>
+      <a href="https://play.google.com/store/apps/details?id=com.chembiocalc.app" target="_blank" rel="noopener">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play'den Edinin">
+      </a>
+    </div>
+    <p class="store-hint">App Store ve Google Play'de bu simgeyi arayın</p>
+  </section>
+
+  <section class="features">
+    <h2>Neler yapabilirsiniz</h2>
+    <p class="sub">Kimya, moleküler biyoloji ve eczacılık alanlarında 60+ araç — her sonuç PDF veya Excel raporu olarak dışa aktarılabilir.</p>
+    <div class="grid">
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">🧮</span><h3>Hesaplayıcı &amp; Hızlı Araçlar</h3></div>
+        <ul>
+          <li><b>Mol hesaplama</b> — kütle &amp; molar kütleden mol</li>
+          <li><b>Molar kütle</b> — herhangi bir kimyasal formülden</li>
+          <li><b>pH / pOH</b> — asitler &amp; bazlar için</li>
+          <li><b>Seyreltme</b> (C₁V₁ = C₂V₂)</li>
+          <li><b>Birim dönüştürücü</b> — laboratuvar birimleri arası</li>
+          <li><b>İstatistik</b> — t-testi, ANOVA, korelasyon</li>
+          <li><b>Formül referansı</b> — kimya &amp; biyoloji</li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">🧪</span><h3>Çözelti Hazırlama</h3></div>
+        <ul>
+          <li><b>Molar çözeltiler</b> — derişim &amp; kütle</li>
+          <li><b>% (a/h) çözeltiler</b></li>
+          <li><b>ppm çözeltiler</b></li>
+          <li><b>Tamponlar</b> — Henderson-Hasselbalch &amp; kapasite</li>
+          <li><b>Derişim dönüştürücü</b> — M / m / %a/h / ppm / mol kesri</li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">⚗️</span><h3>Kimya</h3></div>
+        <ul>
+          <li><b>Denklem denkleştirme</b> &amp; stokiyometri</li>
+          <li><b>Reaksiyon verimi</b> &amp; sınırlayıcı reaktif</li>
+          <li><b>Kaba / molekül formülü</b></li>
+          <li><b>Termokimya</b> — Q=mcΔT, kalorimetri</li>
+          <li><b>Termodinamik</b> — Gibbs, entalpi, entropi</li>
+          <li><b>Gaz yasaları</b> (PV = nRT)</li>
+          <li><b>Elektroliz</b> — Faraday yasaları</li>
+          <li><b>Kçç &amp; çözünürlük</b> dengesi</li>
+          <li><b>Titrasyon simülatörü</b> — asit-baz eğrileri</li>
+          <li><b>Reaksiyon kinetiği</b> &amp; Arrhenius grafiği</li>
+          <li><b>Adsorpsiyon izotermleri</b> — Langmuir, Freundlich</li>
+          <li><b>Kromatografi</b> — Rt, k′, N, ayırma gücü</li>
+          <li><b>SDS / GHS</b> güvenlik verileri</li>
+          <li><b>Molekül görüntüleyici</b> — SMILES 2B/3B + dışa aktarma</li>
+          <li><b>IR spektrumu</b> — pik &amp; fonksiyonel grup</li>
+          <li><b>Jel / TLC analizi</b> — fotoğraftan</li>
+          <li><b>RGB kolorimetri</b> — kamera ile</li>
+          <li><b>Laboratuvar protokolleri</b> — adım adım rehberler</li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">📈</span><h3>Analitik &amp; QC<span class="pro">PRO</span></h3></div>
+        <ul>
+          <li><b>Yöntem validasyonu</b> — ICH Q2(R2) + EMA M10</li>
+          <li><b>Standart eğri &amp; kalibrasyon</b> — R², LOD/LOQ</li>
+          <li><b>HPLC yöntem transferi</b> — USP &lt;621&gt; ölçekleme</li>
+          <li><b>HPLC kolon seçici</b> — faz önerisi</li>
+          <li><b>Çok bileşenli UV-Vis</b> — Beer-Lambert matrisi</li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">🧬</span><h3>Moleküler Biyoloji</h3></div>
+        <ul>
+          <li><b>DNA / RNA</b> — derişim &amp; saflık</li>
+          <li><b>PCR</b> — master miks &amp; primer Tm</li>
+          <li><b>qPCR</b> — ΔΔCt analizi &amp; verimlilik</li>
+          <li><b>Primer tasarımcı</b></li>
+          <li><b>Dizi analizi</b> — GC, çeviri, tümleyen</li>
+          <li><b>Klonlama</b> — ligasyon &amp; transformasyon</li>
+          <li><b>Restriksiyon &amp; plazmit haritaları</b></li>
+          <li><b>CRISPR</b> kılavuz tasarımı</li>
+          <li><b>Protein tayini</b> — Bradford, BCA</li>
+          <li><b>Protein MA &amp; pI</b> — diziden</li>
+          <li><b>ELISA</b> — 4PL standart eğri</li>
+          <li><b>Enzim kinetiği</b> — Michaelis-Menten</li>
+          <li><b>Western blot</b> &amp; elektroforez</li>
+          <li><b>Hücre kültürü</b> — sayım &amp; pasajlama</li>
+          <li><b>CFU &amp; seri seyreltme</b></li>
+          <li><b>NGS kapsama</b> — Lander-Waterman</li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">💊</span><h3>Eczacılık</h3></div>
+        <ul>
+          <li><b>IV damla</b> — mL/sa, damla/dk, infüzyon süresi</li>
+          <li><b>Pediatrik doz</b> — VYA, Mosteller, Clark, Young</li>
+          <li><b>Doz dönüşümü</b> — NOAEL, HED, allometrik</li>
+          <li><b>Farmakokinetik</b> — AUC, yarı ömür</li>
+          <li><b>2 kompartmanlı PopPK</b> — IV bolus/infüzyon</li>
+          <li><b>İlaç salım kinetiği</b> — Higuchi, Korsmeyer-Peppas</li>
+          <li><b>Dissolüsyon testi</b> — f1 / f2 profilleri</li>
+          <li><b>Stabilite &amp; raf ömrü</b> — Arrhenius, ICH bölgeleri</li>
+          <li><b>Biyoeşdeğerlik</b></li>
+          <li><b>Enkapsülasyon verimi</b> &amp; ilaç yükleme</li>
+          <li><b>Partikül boyutu</b> — d10 / d50 / d90, açıklık</li>
+          <li><b>Renal / hepatik doz ayarı</b></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">🔬</span><h3>Laboratuvar Araçları &amp; Referans</h3></div>
+        <ul>
+          <li><b>Periyodik tablo</b> — element bilgisi &amp; arama</li>
+          <li><b>Laboratuvar zamanlayıcısı</b> — deney beklemeleri için</li>
+          <li><b>Deney defteri</b> — notlar, fotoğraflar, etiketler, PDF</li>
+          <li><b>Formül referans</b> kütüphanesi</li>
+          <li><b>PDF &amp; Excel rapor dışa aktarma</b> — kaynakçalı</li>
+          <li><b>Çevrimdışı &amp; gizli</b> — veriler cihazınızda kalır</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-links">
+      <a href="/support">Destek</a>
+      <a href="mailto:support@chembiocalc.com">İletişim</a>
+      <a href="/privacy">Gizlilik Politikası</a>
+      <a href="/terms">Kullanım Koşulları</a>
+      <a href="/">English</a>
+    </div>
+    <p class="small">© ChemBioCalc · support@chembiocalc.com</p>
+  </footer>
+
+  <script>
+    // Kullanıcının manuel dil seçimini hatırla.
+    document.querySelectorAll('.lang-switch a').forEach(function (el) {
+      el.addEventListener('click', function () {
+        try { localStorage.setItem('cbc_lang', el.getAttribute('data-lang')); } catch (e) {}
+      });
+    });
+  </script>
+</body>
+</html>

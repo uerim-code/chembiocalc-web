@@ -3,44 +3,239 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChemBioCalc – Chemistry & Biology Calculator</title>
+  <title>ChemBioCalc – Chemistry, Biology & Pharma Calculator</title>
+  <meta name="description" content="ChemBioCalc is a professional chemistry, molecular biology and pharmacology calculator for scientists, students and lab professionals. 60+ tools across solutions, reactions, analytical QC, molecular biology and pharma — offline, no account.">
   <link rel="canonical" href="https://chembiocalc.com/">
+  <link rel="alternate" hreflang="en" href="https://chembiocalc.com/">
+  <link rel="alternate" hreflang="tr" href="https://chembiocalc.com/tr/">
+  <link rel="alternate" hreflang="x-default" href="https://chembiocalc.com/">
   <link rel="icon" type="image/png" href="/icon.png">
   <link rel="apple-touch-icon" href="/icon.png">
   <meta name="robots" content="index, follow">
+  <script>
+    // Auto-detect language on first visit; respect a manual choice afterwards.
+    (function () {
+      try {
+        var pageLang = 'en';
+        var stored = localStorage.getItem('cbc_lang');
+        if (stored === 'tr') { location.replace('/tr/'); return; }
+        if (!stored) {
+          var nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+          if (nav.indexOf('tr') === 0) { location.replace('/tr/'); }
+        }
+      } catch (e) {}
+    })();
+  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a1a; color: #e0e0f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; }
-    .logo { width: 120px; height: 120px; border-radius: 27px; margin-bottom: 24px; box-shadow: 0 8px 30px rgba(123,123,240,0.35); }
-    h1 { font-size: 2.6rem; font-weight: 700; color: #ffffff; margin-bottom: 16px; }
-    p { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 40px; text-align: center; max-width: 440px; line-height: 1.6; }
-    .badges { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px; align-items: center; }
-    .badges a { display: flex; }
-    .badges img { height: 58px; width: auto; }
-    .store-hint { font-size: 0.9rem; color: #8a8ab0; margin-bottom: 48px; text-align: center; }
-    .links { display: flex; gap: 32px; }
-    .links a { color: #7b7bf0; text-decoration: none; font-size: 1rem; }
-    .links a:hover { text-decoration: underline; }
+    :root { --bg:#0a0a1a; --card:#12122a; --card2:#16213e; --accent:#7b7bf0; --text:#e0e0f0; --muted:#a0a0c0; --border:#23234a; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Header */
+    header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: rgba(10,10,26,0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #fff; }
+    .brand img { width: 32px; height: 32px; border-radius: 8px; }
+    .lang-switch { display: flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+    .lang-switch a { padding: 6px 14px; font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+    .lang-switch a.active { background: var(--accent); color: #fff; }
+    .lang-switch a:hover { text-decoration: none; }
+
+    /* Hero */
+    .hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 64px 20px 40px; }
+    .hero .logo { width: 110px; height: 110px; border-radius: 25px; margin-bottom: 22px; box-shadow: 0 8px 30px rgba(123,123,240,0.35); }
+    .hero h1 { font-size: 2.5rem; color: #fff; margin-bottom: 14px; }
+    .hero p.tagline { font-size: 1.12rem; color: var(--muted); max-width: 520px; margin-bottom: 34px; }
+    .badges { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; margin-bottom: 12px; align-items: center; }
+    .badges img { height: 56px; width: auto; }
+    .store-hint { font-size: 0.88rem; color: #8a8ab0; margin-top: 4px; }
+
+    /* Features */
+    .features { max-width: 1080px; margin: 0 auto; padding: 30px 20px 70px; }
+    .features h2 { text-align: center; font-size: 1.8rem; color: #fff; margin-bottom: 8px; }
+    .features .sub { text-align: center; color: var(--muted); margin-bottom: 44px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .cat { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px 22px 8px; }
+    .cat-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .cat-icon { font-size: 1.6rem; line-height: 1; }
+    .cat h3 { font-size: 1.18rem; color: #fff; }
+    .cat .pro { font-size: 0.68rem; font-weight: 700; color: #1a1a2e; background: #facc15; border-radius: 6px; padding: 2px 7px; margin-left: 8px; vertical-align: middle; }
+    .cat ul { list-style: none; }
+    .cat li { position: relative; padding: 6px 0 6px 22px; color: #cfcfe6; font-size: 0.95rem; border-top: 1px solid rgba(255,255,255,0.04); }
+    .cat li:first-child { border-top: none; }
+    .cat li::before { content: '›'; position: absolute; left: 4px; color: var(--accent); font-weight: 700; }
+    .cat li b { color: #fff; font-weight: 600; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 36px 20px 56px; text-align: center; }
+    .footer-links { display: flex; gap: 26px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px; }
+    footer .small { color: #6a6a90; font-size: 0.82rem; }
+
+    @media (max-width: 520px) { .hero h1 { font-size: 2rem; } }
   </style>
 </head>
 <body>
-  <img src="/icon.png" alt="ChemBioCalc app icon" class="logo">
-  <h1>ChemBioCalc</h1>
-  <p>Professional chemistry & biology calculator for scientists, students, and lab professionals.</p>
-  <div class="badges">
-    <a href="https://apps.apple.com/us/app/chembiocalc/id6762520756" target="_blank">
-      <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" style="height:58px;width:auto;">
-    </a>
-    <a href="https://play.google.com/store/apps/details?id=com.chembiocalc.app" target="_blank">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" style="height:58px;width:auto;">
-    </a>
-  </div>
-  <p class="store-hint">Look for this icon on the App Store &amp; Google Play · Store'larda bu simgeyi arayın</p>
-  <div class="links">
-    <a href="/support">Support</a>
-    <a href="mailto:support@chembiocalc.com">Contact</a>
-    <a href="/privacy">Privacy Policy</a>
-    <a href="/terms">Terms of Use</a>
-  </div>
+  <header>
+    <div class="brand"><img src="/icon.png" alt="ChemBioCalc icon"> ChemBioCalc</div>
+    <nav class="lang-switch">
+      <a href="/" class="active" data-lang="en">EN</a>
+      <a href="/tr/" data-lang="tr">TR</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <img src="/icon.png" alt="ChemBioCalc app icon" class="logo">
+    <h1>ChemBioCalc</h1>
+    <p class="tagline">A professional chemistry, molecular biology &amp; pharmacology calculator for scientists, students and lab professionals — fully bilingual (EN/TR), works offline, no account required.</p>
+    <div class="badges">
+      <a href="https://apps.apple.com/us/app/chembiocalc/id6762520756" target="_blank" rel="noopener">
+        <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+      </a>
+      <a href="https://play.google.com/store/apps/details?id=com.chembiocalc.app" target="_blank" rel="noopener">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play">
+      </a>
+    </div>
+    <p class="store-hint">Look for this icon on the App Store &amp; Google Play</p>
+  </section>
+
+  <section class="features">
+    <h2>What you can do</h2>
+    <p class="sub">60+ tools across chemistry, molecular biology and pharma — every result exportable as a PDF or Excel report.</p>
+    <div class="grid">
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">🧮</span><h3>Calculator &amp; Quick Tools</h3></div>
+        <ul>
+          <li><b>Mol calculation</b> — mol from mass &amp; molar mass</li>
+          <li><b>Molar mass</b> from any chemical formula</li>
+          <li><b>pH / pOH</b> for acids &amp; bases</li>
+          <li><b>Dilution</b> (C₁V₁ = C₂V₂)</li>
+          <li><b>Unit converter</b> across lab units</li>
+          <li><b>Statistics</b> — t-test, ANOVA, correlation</li>
+          <li><b>Formula reference</b> for chemistry &amp; biology</li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">🧪</span><h3>Solution Preparation</h3></div>
+        <ul>
+          <li><b>Molar solutions</b> — concentration &amp; mass</li>
+          <li><b>% (w/v) solutions</b></li>
+          <li><b>ppm solutions</b></li>
+          <li><b>Buffers</b> — Henderson-Hasselbalch &amp; capacity</li>
+          <li><b>Concentration converter</b> — M / m / %w/v / ppm / mol fraction</li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">⚗️</span><h3>Chemistry</h3></div>
+        <ul>
+          <li><b>Equation balancer</b> &amp; stoichiometry</li>
+          <li><b>Reaction yield</b> &amp; limiting reagent</li>
+          <li><b>Empirical / molecular formula</b></li>
+          <li><b>Thermochemistry</b> — Q=mcΔT, calorimetry</li>
+          <li><b>Thermodynamics</b> — Gibbs, enthalpy, entropy</li>
+          <li><b>Gas laws</b> (PV = nRT)</li>
+          <li><b>Electrolysis</b> — Faraday's laws</li>
+          <li><b>Ksp &amp; solubility</b> equilibrium</li>
+          <li><b>Titration simulator</b> — acid-base curves</li>
+          <li><b>Reaction kinetics</b> &amp; Arrhenius plot</li>
+          <li><b>Adsorption isotherms</b> — Langmuir, Freundlich</li>
+          <li><b>Chromatography</b> — Rt, k′, N, resolution</li>
+          <li><b>SDS / GHS</b> safety data</li>
+          <li><b>Molecule viewer</b> — SMILES 2D/3D + export</li>
+          <li><b>IR spectrum</b> — peak &amp; functional group</li>
+          <li><b>Gel / TLC analysis</b> from a photo</li>
+          <li><b>RGB colorimetry</b> with the camera</li>
+          <li><b>Lab protocols</b> — step-by-step guides</li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">📈</span><h3>Analytical &amp; QC<span class="pro">PRO</span></h3></div>
+        <ul>
+          <li><b>Method validation</b> — ICH Q2(R2) + EMA M10</li>
+          <li><b>Standard curve &amp; calibration</b> — R², LOD/LOQ</li>
+          <li><b>HPLC method transfer</b> — USP &lt;621&gt; scaling</li>
+          <li><b>HPLC column selector</b> — phase recommendation</li>
+          <li><b>Multi-component UV-Vis</b> — Beer-Lambert matrix</li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">🧬</span><h3>Molecular Biology</h3></div>
+        <ul>
+          <li><b>DNA / RNA</b> — concentration &amp; purity</li>
+          <li><b>PCR</b> — master mix &amp; primer Tm</li>
+          <li><b>qPCR</b> — ΔΔCt analysis &amp; efficiency</li>
+          <li><b>Primer designer</b></li>
+          <li><b>Sequence analysis</b> — GC, translation, complement</li>
+          <li><b>Cloning</b> — ligation &amp; transformation</li>
+          <li><b>Restriction &amp; plasmid maps</b></li>
+          <li><b>CRISPR</b> guide design</li>
+          <li><b>Protein quantification</b> — Bradford, BCA</li>
+          <li><b>Protein MW &amp; pI</b> from sequence</li>
+          <li><b>ELISA</b> — 4PL standard curve</li>
+          <li><b>Enzyme kinetics</b> — Michaelis-Menten</li>
+          <li><b>Western blot</b> &amp; electrophoresis</li>
+          <li><b>Cell culture</b> — count &amp; passaging</li>
+          <li><b>CFU &amp; serial dilution</b></li>
+          <li><b>NGS coverage</b> — Lander-Waterman</li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">💊</span><h3>Pharma</h3></div>
+        <ul>
+          <li><b>IV drip</b> — mL/hr, drops/min, infusion time</li>
+          <li><b>Pediatric dose</b> — BSA, Mosteller, Clark, Young</li>
+          <li><b>Dose conversion</b> — NOAEL, HED, allometric</li>
+          <li><b>Pharmacokinetics</b> — AUC, half-life</li>
+          <li><b>2-compartment PopPK</b> — IV bolus/infusion</li>
+          <li><b>Drug release kinetics</b> — Higuchi, Korsmeyer-Peppas</li>
+          <li><b>Dissolution test</b> — f1 / f2 profiles</li>
+          <li><b>Stability &amp; shelf-life</b> — Arrhenius, ICH zones</li>
+          <li><b>Bioequivalence</b></li>
+          <li><b>Encapsulation efficiency</b> &amp; drug loading</li>
+          <li><b>Particle size</b> — d10 / d50 / d90, span</li>
+          <li><b>Renal / hepatic dose adjustment</b></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <div class="cat-head"><span class="cat-icon">🔬</span><h3>Lab Tools &amp; Reference</h3></div>
+        <ul>
+          <li><b>Periodic table</b> — element info &amp; search</li>
+          <li><b>Lab timer</b> for experiment waits</li>
+          <li><b>Lab notebook</b> — notes, photos, tags, PDF</li>
+          <li><b>Formula reference</b> library</li>
+          <li><b>PDF &amp; Excel report export</b> with citations</li>
+          <li><b>Offline &amp; private</b> — data stays on your device</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-links">
+      <a href="/support">Support</a>
+      <a href="mailto:support@chembiocalc.com">Contact</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Use</a>
+      <a href="/tr/">Türkçe</a>
+    </div>
+    <p class="small">© ChemBioCalc · support@chembiocalc.com</p>
+  </footer>
+
+  <script>
+    // Remember the user's manual language choice.
+    document.querySelectorAll('.lang-switch a').forEach(function (el) {
+      el.addEventListener('click', function () {
+        try { localStorage.setItem('cbc_lang', el.getAttribute('data-lang')); } catch (e) {}
+      });
+    });
+  </script>
 </body>
 </html>
