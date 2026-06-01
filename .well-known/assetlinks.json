@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.chembiocalc.app",
+      "sha256_cert_fingerprints": [
+        "A2:E9:ED:95:D5:D2:1A:B5:28:E4:18:C5:FA:0C:F1:AD:9A:6C:27:6D:74:09:19:C7:61:47:19:89:2F:A6:BB:D5"
+      ]
+    }
+  }
+]
