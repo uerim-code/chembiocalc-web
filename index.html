@@ -105,16 +105,12 @@
   }
   </script>
   <script>
-    // Auto-detect language on first visit; respect a manual choice afterwards.
+    // Only honor a previously chosen language. No automatic navigator.language
+    // redirect: it made Googlebot (en-US) treat the alternate page as a redirect,
+    // preventing independent crawling/indexing of / and /tr/ (SEO).
     (function () {
       try {
-        var pageLang = 'en';
-        var stored = localStorage.getItem('cbc_lang');
-        if (stored === 'tr') { location.replace('/tr/'); return; }
-        if (!stored) {
-          var nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-          if (nav.indexOf('tr') === 0) { location.replace('/tr/'); }
-        }
+        if (localStorage.getItem('cbc_lang') === 'tr') { location.replace('/tr/'); }
       } catch (e) {}
     })();
   </script>

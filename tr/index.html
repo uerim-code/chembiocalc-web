@@ -104,15 +104,12 @@
   }
   </script>
   <script>
-    // İlk ziyarette dili otomatik algıla; sonrasında manuel seçime uy.
+    // Yalnızca kullanıcının daha önce SEÇTİĞİ dile uy. navigator.language ile
+    // otomatik yönlendirme YOK: bu, Googlebot'un (en-US) /tr/'yi "yönlendirme
+    // sayfası" sayıp Türkçe sayfayı dizine eklememesine yol açıyordu (SEO).
     (function () {
       try {
-        var stored = localStorage.getItem('cbc_lang');
-        if (stored === 'en') { location.replace('/'); return; }
-        if (!stored) {
-          var nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-          if (nav.indexOf('tr') !== 0) { location.replace('/'); }
-        }
+        if (localStorage.getItem('cbc_lang') === 'en') { location.replace('/'); }
       } catch (e) {}
     })();
   </script>
