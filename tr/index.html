@@ -170,6 +170,15 @@
     .faq details[open] summary::after { content: '−'; }
     .faq p { color: #cfcfe6; padding: 0 0 16px; font-size: 0.96rem; }
 
+    .shots { padding: 6px 0 30px; }
+    .shots h2 { text-align: center; font-size: 1.5rem; color: #fff; margin-bottom: 6px; }
+    .shots .sub { text-align: center; color: var(--muted); margin-bottom: 22px; padding: 0 20px; }
+    .shots-strip { display: flex; gap: 16px; overflow-x: auto; padding: 4px 20px 16px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+    .shots-strip img { height: 440px; width: auto; border-radius: 22px; border: 1px solid var(--border); box-shadow: 0 12px 34px rgba(0,0,0,0.45); scroll-snap-align: center; flex: 0 0 auto; background: var(--card); }
+    .shots-strip::-webkit-scrollbar { height: 8px; }
+    .shots-strip::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+    @media (max-width: 600px) { .shots-strip img { height: 360px; } }
+
     @media (max-width: 920px) { .grid { column-count: 2; } }
     @media (max-width: 600px) { .grid { column-count: 1; } .hero h1 { font-size: 2rem; } }
   </style>
@@ -194,6 +203,19 @@
       <a href="https://play.google.com/store/apps/details?id=com.chembiocalc.app" target="_blank" rel="noopener">
         <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play'den Edinin">
       </a>
+    </div>
+  </section>
+
+  <section class="shots">
+    <h2>Uygulamadan görüntüler</h2>
+    <p class="sub">Etkileşimli periyodik tablo, dokunmatik element kartları ve profesyonel hesaplayıcılar — hepsi telefonunuzda.</p>
+    <div class="shots-strip">
+      <img src="/press/screens/01_periodic.png" alt="ChemBioCalc etkileşimli periyodik tablo ekranı" loading="lazy">
+      <img src="/press/screens/tr_03_chemistry.png" alt="ChemBioCalc kimya hesaplayıcıları ekranı" loading="lazy">
+      <img src="/press/screens/tr_04_biology.png" alt="ChemBioCalc moleküler biyoloji araçları ekranı" loading="lazy">
+      <img src="/press/screens/tr_05_pharma_pro.png" alt="ChemBioCalc eczacılık PRO araçları ekranı" loading="lazy">
+      <img src="/press/screens/06_molbio.png" alt="ChemBioCalc moleküler biyoloji paketi ekranı" loading="lazy">
+      <img src="/press/screens/08_notebook.png" alt="ChemBioCalc laboratuvar defteri ekranı" loading="lazy">
     </div>
   </section>
 
