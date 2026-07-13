@@ -186,7 +186,7 @@
     .shots { padding: 6px 0 30px; }
     .shots h2 { text-align: center; font-size: 1.5rem; color: #fff; margin-bottom: 6px; }
     .shots .sub { text-align: center; color: var(--muted); margin-bottom: 22px; padding: 0 20px; }
-    .shots-strip { display: flex; gap: 16px; overflow-x: auto; padding: 4px 20px 16px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+    .shots-strip { display: flex; gap: 16px; overflow-x: auto; max-width: 1180px; margin: 0 auto; padding: 4px 20px 24px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
     .shots-strip img { height: 440px; width: auto; border-radius: 22px; border: 1px solid var(--border); box-shadow: 0 12px 34px rgba(0,0,0,0.45); scroll-snap-align: center; flex: 0 0 auto; background: var(--card); }
     .shots-strip::-webkit-scrollbar { height: 8px; }
     .shots-strip::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
